@@ -11,13 +11,28 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=development
       - REMOTE_DEBUGGING=${REMOTE_DEBUGGING}
-      - VIRTUAL_HOST=ngs_nff_autostore.newgistics.com
+      - VIRTUAL_HOST=myapp.nginx-proxy-app.com
     ports:
       - "5000:80"
     networks:
       - dev-network
     tty: true
     stdin_open: true
+
+  nginx-proxy-nat:
+    image: jwilder/nginx-proxy
+    container_name: nginx-proxy-nat
+    environment:
+      - HSTS=off
+      - HTTPS_METHOD=noredirect
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - dev-network
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - ./certs:/etc/nginx/certs
 
 networks:
   dev-network:

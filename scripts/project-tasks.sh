@@ -4,6 +4,10 @@
 # #############################################################################
 # Settings
 #
+certificatePrefix="nginx-proxy-app.com"
+hostsFile=/etc/hosts
+hostsIP="127.0.0.1"
+
 BLUE="\033[00;94m"
 GREEN="\033[00;92m"
 RED="\033[00;31m"
@@ -96,6 +100,106 @@ compose () {
 
 
 # #############################################################################
+# Setup Nginx.
+#
+setupNginx () {
+
+    echo -e "${GREEN}"
+    echo -e "++++++++++++++++++++++++++++++++++++++++++++++++"
+    echo -e "+ Setting up service                            "
+    echo -e "++++++++++++++++++++++++++++++++++++++++++++++++"
+    echo -e "${RESTORE}"
+
+
+    # remove existing certificates
+    echo -e "${YELLOW} Removing existings certificates... ${RESTORE}"
+    sudo security delete-certificate -c edutacity.com /Library/Keychains/System.keychain
+
+    # generate key
+    openssl \
+        genrsa \
+        -out certs/$certificatePrefix.key \
+        4096
+
+    # generate csr request
+    openssl \
+        req \
+        -new \
+        -sha256 \
+        -out certs/$certificatePrefix.csr \
+        -key certs/$certificatePrefix.key \
+        -config openssl-san.conf
+
+    #generate certIficate from csr request
+    openssl \
+        x509 \
+        -req \
+        -days 3650 \
+        -in certs/$certificatePrefix.csr \
+        -signkey certs/$certificatePrefix.key \
+        -out certs/$certificatePrefix.crt \
+        -extensions req_ext \
+        -extfile openssl-san.conf
+
+    # generate pem
+    cat certs/$certificatePrefix.crt certs/$certificatePrefix.key > certs/$certificatePrefix.pem
+
+    # install certIficate
+    if [ -f certs/$certificatePrefix.crt ]; then
+        echo -e "${YELLOW} Installing certificate... ${RESTORE}"
+        sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain certs/$certificatePrefix.crt
+    else
+        echo -e "${RED} An error occurred while generating the certificate: certs/$certificatePrefix.crt ${RESTORE}"
+    fi
+
+    # openssl req -text -noout -in nginx-proxy-app.com.csr # DEBUG 
+
+    # Write Hosts
+
+
+}
+
+
+# #############################################################################
+# Removes a hostname
+#
+function removeHost() {
+    if [ -n "$(grep $HOSTNAME /etc/hosts)" ]
+    then
+        echo "$HOSTNAME Found in your $ETC_HOSTS, Removing now...";
+        sudo sed -i".bak" "/$HOSTNAME/d" $ETC_HOSTS
+    else
+        echo "$HOSTNAME was not found in your $ETC_HOSTS";
+    fi
+}
+
+
+# #############################################################################
+# Adds a host name
+#
+# $1 hostname
+#
+function addHost() {
+    HOSTNAME=$1
+    HOSTS_LINE="$hostsIP\t$HOSTNAME"
+    if [ -n "$(grep $HOSTNAME /etc/hosts)" ]
+        then
+            echo "$HOSTNAME already exists : $(grep $HOSTNAME $ETC_HOSTS)"
+        else
+            echo "Adding $HOSTNAME to your $ETC_HOSTS";
+            sudo -- sh -c -e "echo '$HOSTS_LINE' >> /etc/hosts";
+
+            if [ -n "$(grep $HOSTNAME /etc/hosts)" ]
+                then
+                    echo "$HOSTNAME was added succesfully \n $(grep $HOSTNAME /etc/hosts)";
+                else
+                    echo "Failed to Add $HOSTNAME, Try again!";
+            fi
+    fi
+}
+
+
+# #############################################################################
 # Shows the usage for the script
 #
 showUsage () {
@@ -108,6 +212,7 @@ showUsage () {
     echo -e "    clean: Removes the images and kills all containers based on that image."
     echo -e "    compose: Runs docker-compose."
     echo -e "    composeForDebug: Builds the image and runs docker-compose."
+    echo -e "    setup: Setup the project (nginx)."
     echo -e ""
     echo -e "Environments:"
     echo -e "    development: Default environment."
@@ -138,6 +243,9 @@ else
         "composeForDebug")
             export REMOTE_DEBUGGING="enabled"
             compose
+            ;;
+        "setup")
+            setupNginx
             ;;
         *)
             showUsage

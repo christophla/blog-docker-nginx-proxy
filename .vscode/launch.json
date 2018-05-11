@@ -45,7 +45,7 @@
                 "REMOTE_DEBUGGING": "true"
             },
             "launchBrowser": {
-                "args": "http://test.docker-nginx-proxy-example.com/api/values",
+                "args": "http://myapp.nginx-proxy-app.com/api/values",
                 "enabled": true,
                 "linux": {
                     "command": "xdg-open"
@@ -54,7 +54,7 @@
                     "command": "open"
                 },
                 "windows": {
-                    "args": "/C start http://test.docker-nginx-proxy-example.com/api/values",
+                    "args": "/C start http://myapp.nginx-proxy-app.com/api/values",
                     "command": "cmd.exe"
                 }
             },
