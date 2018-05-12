@@ -100,20 +100,20 @@ compose () {
 
 
 # #############################################################################
-# Setup Nginx.
+# Setup Nginx proxy.
 #
-setupNginx () {
+setupProxy () {
 
     echo -e "${GREEN}"
     echo -e "++++++++++++++++++++++++++++++++++++++++++++++++"
-    echo -e "+ Setting up service                            "
+    echo -e "+ Setting up nginx proxy                            "
     echo -e "++++++++++++++++++++++++++++++++++++++++++++++++"
     echo -e "${RESTORE}"
 
 
     # remove existing certificates
     echo -e "${YELLOW} Removing existings certificates... ${RESTORE}"
-    sudo security delete-certificate -c edutacity.com /Library/Keychains/System.keychain
+    sudo security delete-certificate -c $certificatePrefix /Library/Keychains/System.keychain
 
     # generate key
     openssl \
@@ -130,7 +130,7 @@ setupNginx () {
         -key certs/$certificatePrefix.key \
         -config openssl-san.conf
 
-    #generate certIficate from csr request
+    #generate certificate from csr request
     openssl \
         x509 \
         -req \
@@ -144,7 +144,7 @@ setupNginx () {
     # generate pem
     cat certs/$certificatePrefix.crt certs/$certificatePrefix.key > certs/$certificatePrefix.pem
 
-    # install certIficate
+    # install certificate
     if [ -f certs/$certificatePrefix.crt ]; then
         echo -e "${YELLOW} Installing certificate... ${RESTORE}"
         sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain certs/$certificatePrefix.crt
@@ -245,7 +245,7 @@ else
             compose
             ;;
         "setup")
-            setupNginx
+            setupProxy
             ;;
         *)
             showUsage

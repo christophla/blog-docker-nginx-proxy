@@ -106,10 +106,10 @@ Function Compose () {
 # #############################################################################
 # Setup the Nginx proxy.
 #
-Function SetupNginx () {
+Function SetupProxy () {
 
     Write-Host "++++++++++++++++++++++++++++++++++++++++++++++++" -ForegroundColor "Green"
-    Write-Host "+ Setting up service                            " -ForegroundColor "Green"
+    Write-Host "+ Setting up nginx proxy                        " -ForegroundColor "Green"
     Write-Host "++++++++++++++++++++++++++++++++++++++++++++++++" -ForegroundColor "Green"
 
     Write-Host "Removing existings certIficates..." -ForegroundColor "Yellow"
@@ -235,7 +235,7 @@ ElseIf ($ComposeForDebug) {
     Compose
 }
 ElseIf ($Setup) {
-    SetupNginx
+    SetupProxy
 }
 
 # #############################################################################
