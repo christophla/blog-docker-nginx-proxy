@@ -1,6 +1,6 @@
 # Clean Development URLs and SSL with Docker and Nginx Proxy.
 
-[![Build Status](https://travis-ci.org/christophla/docker-nginx-proxy.svg?branch=master)](https://travis-ci.org/christophla/docker-nginx-proxy)
+[![Build Status](https://travis-ci.org/christophla/blog-docker-nginx-proxy.svg?branch=master)](https://travis-ci.org/christophla/blog-docker-nginx-proxy)
 
 ## About
 
