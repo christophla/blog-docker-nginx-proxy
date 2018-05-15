@@ -3,6 +3,9 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+# Certificates
+certs/
+
 # Coverlet code coverage output
 .coverage
 coverage.info
