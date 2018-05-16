@@ -23,7 +23,7 @@ Param(
     [Switch]$Clean,
     [Switch]$Compose,
     [Switch]$ComposeForDebug,
-    [Switch]$SetupProxy,
+    [Switch]$Setup,
     [ValidateNotNullOrEmpty()]
     [String]$Environment = "development"
 )
