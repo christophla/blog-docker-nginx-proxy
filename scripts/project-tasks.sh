@@ -154,7 +154,7 @@ setupProxy () {
 
     # openssl req -text -noout -in nginx-proxy-app.com.csr # DEBUG 
 
-    # Write Hosts
+    # write hosts
     addHost "myapp.nginx-proxy-app.com"
 
 }
